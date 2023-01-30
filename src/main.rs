@@ -14,7 +14,11 @@ fn main() {
     let mut writer = encoder.write_header().unwrap();
 
     // Generating a string of red/black pixels to cover the whole image
-    let data = [255, 0, 0, 255, 0, 0, 0, 255].iter().cloned().cycle().take(10*10*4);
-    let data:  Vec<u8> =  Vec::from_iter(data);
+    let data = [255, 0, 0, 255, 0, 0, 0, 255]
+        .iter()
+        .cloned()
+        .cycle()
+        .take(10 * 10 * 4);
+    let data: Vec<u8> = Vec::from_iter(data);
     writer.write_image_data(&data).unwrap(); // Save
 }
