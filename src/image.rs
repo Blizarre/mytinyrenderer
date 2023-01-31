@@ -20,12 +20,8 @@ pub struct Pixel {
 }
 
 impl Pixel {
-    pub fn new(r: u8, g: u8, b: u8) -> Pixel {
+    pub const fn new(r: u8, g: u8, b: u8) -> Pixel {
         Pixel { r, g, b, a: 255 }
-    }
-
-    pub fn black() -> Pixel {
-        Self::new(0, 0, 0)
     }
 
     fn as_u8(self) -> [u8; 4] {
@@ -33,10 +29,12 @@ impl Pixel {
     }
 }
 
+pub const BLACK: Pixel = Pixel::new(0, 0, 0);
+
 impl<'a> Image {
     pub fn new(width: usize, height: usize) -> Self {
         let mut data = Vec::new();
-        data.resize(width * height, Pixel::black());
+        data.resize(width * height, BLACK);
         Self {
             width,
             height,
