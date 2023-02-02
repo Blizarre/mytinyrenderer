@@ -6,8 +6,8 @@ use std::path::Path;
 
 pub struct Image {
     data: Vec<Pixel>,
-    width: usize,
-    height: usize,
+    pub width: u32,
+    pub height: u32,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -32,9 +32,9 @@ impl Pixel {
 pub const BLACK: Pixel = Pixel::new(0, 0, 0);
 
 impl<'a> Image {
-    pub fn new(width: usize, height: usize) -> Self {
+    pub fn new(width: u32, height: u32) -> Self {
         let mut data = Vec::new();
-        data.resize(width * height, BLACK);
+        data.resize((width * height) as usize, BLACK);
         Self {
             width,
             height,
@@ -42,20 +42,18 @@ impl<'a> Image {
         }
     }
 
-    pub fn get(&'a mut self, x: usize, y: usize) -> &'a mut Pixel {
+    pub fn get(&'a mut self, x: u32, y: u32) -> &'a mut Pixel {
         if x >= self.width {
-            panic!("Array out of bound"); // Will do for now
+            panic!("Invalid width (out of bound)"); // Will do for now
         }
-        self.data.get_mut(y * self.width + x).unwrap()
+        self.data.get_mut((y * self.width + x) as usize).unwrap()
     }
 
     pub fn write_to_file(self, path: &Path) -> Result<(), Box<dyn Error>> {
         let file = File::create(path)?;
         let w = &mut BufWriter::new(file);
 
-        let width_u32 = u32::try_from(self.width)?;
-        let height_u32 = u32::try_from(self.height)?;
-        let mut encoder = png::Encoder::new(w, width_u32, height_u32);
+        let mut encoder = png::Encoder::new(w, self.width, self.height);
         encoder.set_color(png::ColorType::Rgba);
         encoder.set_depth(png::BitDepth::Eight);
         let mut writer = encoder.write_header()?;
