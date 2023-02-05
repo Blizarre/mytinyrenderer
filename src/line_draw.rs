@@ -1,5 +1,5 @@
-
-use crate::{Pixel, Point, Image};
+use super::image::{Pixel, Image};
+use super::point::Point;
 
 // From wikipedia: https://en.wikipedia.org/wiki/Bresenham's_line_algorithm
 
@@ -18,10 +18,10 @@ fn draw_line_low_nochecks(image: &mut Image, start: Point, end: Point, color: Pi
     for x in (start.x as i32)..(end.x as i32) {
         *image.get(x as u32, y as u32) = color;
         if error > 0 {
-            y = y + yi;
-            error = error + (2 * (dy - dx));
+            y += yi;
+            error += 2 * (dy - dx);
         } else {
-            error = error + 2 * dy;
+            error += 2 * dy;
         }
     }
 }
@@ -37,10 +37,10 @@ fn draw_line_high_nochecks(image: &mut Image, start: Point, end: Point, color: P
     for y in (start.y as i32)..(end.y as i32) {
         *image.get(x as u32, y as u32) = color;
         if error > 0 {
-            x = x + xi;
-            error = error + (2 * (dx - dy));
+            x += xi;
+            error += 2 * (dx - dy);
         } else {
-            error = error + 2 * dx;
+            error *= 2 * dx;
         }
     }
 }
@@ -54,12 +54,10 @@ pub fn draw_line(image: &mut Image, p1: Point, p2: Point, color: Pixel) {
             } else {
                 draw_line_low_nochecks(image, p1, p2, color)
             }
+        } else if p1.y > p2.y {
+            draw_line_high_nochecks(image, p2, p1, color)
         } else {
-            if p1.y > p2.y {
-                draw_line_high_nochecks(image, p2, p1, color)
-            } else {
-                draw_line_high_nochecks(image, p1, p2, color)
-            }
+            draw_line_high_nochecks(image, p1, p2, color)
         }
     }
 }
